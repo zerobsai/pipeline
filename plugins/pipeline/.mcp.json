@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pipeline": {
+      "type": "http",
+      "url": "https://pipeline.zerobsai.com/api/mcp"
+    }
+  }
+}

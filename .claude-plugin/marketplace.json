@@ -1,0 +1,15 @@
+{
+  "name": "zerobsai",
+  "owner": {
+    "name": "zerobs.ai",
+    "email": "tim@zerobsai.com"
+  },
+  "description": "Plugins from zerobs.ai",
+  "plugins": [
+    {
+      "name": "pipeline",
+      "source": "./plugins/pipeline",
+      "description": "Marketing pipeline MCP connection + skills for setup, daily use, and syncing the claude-blog / claude-seo / claude-ads skills into Pipeline"
+    }
+  ]
+}

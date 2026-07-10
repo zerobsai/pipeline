@@ -1,0 +1,14 @@
+{
+  "name": "pipeline",
+  "displayName": "Pipeline",
+  "version": "0.1.0",
+  "description": "Connect Claude to Pipeline (pipeline.zerobsai.com) — the system of record for your marketing content. Includes setup, day-to-day usage, and sync with the claude-blog, claude-seo, and claude-ads skills.",
+  "author": {
+    "name": "zerobs.ai",
+    "email": "tim@zerobsai.com"
+  },
+  "homepage": "https://pipeline.zerobsai.com",
+  "repository": "https://github.com/zerobsai/pipeline",
+  "license": "MIT",
+  "keywords": ["marketing", "content", "seo", "mcp", "pipeline"]
+}
