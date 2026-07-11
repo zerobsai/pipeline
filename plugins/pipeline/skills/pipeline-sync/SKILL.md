@@ -17,6 +17,8 @@ The claude-blog / claude-seo / claude-ads suites are stateless — they read and
 
 After an SEO audit completes, it writes an `audit-data.json` envelope (health score, categories, findings, phased action plan).
 
+If the audit needs data the user has no local API setup for, the hosted tools fill the gap: `pagespeed_check` for Core Web Vitals/field data, `serp_search` for ranking and competitor checks, `scrape_url` to pull a competitor page into clean markdown.
+
 1. `submit_audit` with `kind: "seo"`, the target site, and the envelope as `payload`.
 2. Findings are auto-created server-side with fingerprint dedupe: re-submitting an audit **refreshes** matching open findings, and open findings of the same kind+target that are *absent* from the new submission are auto-marked **fixed** — so always submit the complete envelope, never a filtered subset.
 3. Attach the human-readable report (PDF/markdown) to the audit with `attach_artifact`.
@@ -31,8 +33,8 @@ claude-ads scores accounts against a catalog of stable check IDs.
 
 ## claude-blog → Pipeline
 
-1. **Brief accepted** → `create_item` with the post's slug, title, brief, channel `blog`, and target site. Do this when the slug is decided, not at publish time — the pipeline should show work in flight.
-2. **Draft/revision produced** → `attach_artifact` the markdown against the item; `advance_stage` as it moves (drafting → review → etc.). Stage moves *forward out of* a human-gate stage are refused by the server — a human clears gates in the web UI; report the gate message and stop.
+1. **Brief accepted** → `create_item` with the post's slug, title, brief, channel `blog`, and target site. Do this when the slug is decided, not at publish time — the pipeline should show work in flight. If the user has no local Keyword Planner/DataForSEO setup, `keyword_research` (hosted) can replace the brief's estimated volumes with real monthly volume/CPC/competition before you write the item.
+2. **Draft/revision produced** → `attach_artifact` the markdown against the item; `advance_stage` as it moves (drafting → review → etc.). Stage moves *forward out of* a human-gate stage are refused by the server — a human clears gates in the web UI; report the gate message and stop. Need a hero image and the user has no local `GOOGLE_AI_API_KEY`? `generate_image` (hosted) produces one straight into a Pipeline artifact; fetch it with `get_artifact_content` and write it to disk to satisfy the blog delivery contract.
 3. **Preflight/review results** → the skill's `preflight-report.json` and review scorecard (the `BLOCKING:` line) are machine-readable: `submit_audit` with `kind: "blog_quality"`, target = the item's slug.
 4. **Published** → `update_item` with the live URL and published date.
 5. **Repurposed content** (social post, newsletter cut from an article) → `create_item` for the derivative on its channel, then `link_derivative` (child derived_from parent). Check `list_repurpose_gaps` to find published items missing declared channels — that's the repurposing to-do list.

@@ -1,6 +1,6 @@
 # Pipeline — Claude Code plugin
 
-Connect Claude to [Pipeline](https://pipeline.zerobsai.com), the system of record for your marketing content: a stage-based content pipeline with brand kits, audits with a finding lifecycle, a content calendar, and a repurposing graph — exposed to Claude as an OAuth-protected MCP server.
+Connect Claude to [Pipeline](https://pipeline.zerobsai.com), the system of record for your marketing content: a stage-based content pipeline with brand kits, audits with a finding lifecycle, a content calendar, a repurposing graph, and hosted AI-workflow tools (SERP search, keyword research, URL scraping, PageSpeed, image generation) that run on platform keys so no local API setup is needed — exposed to Claude as an OAuth-protected MCP server.
 
 It's designed to pair with the stateless marketing skill suites, giving them shared, persistent state:
 

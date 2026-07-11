@@ -34,6 +34,23 @@ Pipeline (https://pipeline.zerobsai.com) is the system of record for marketing c
 | Audit results in | `submit_audit` (see the `pipeline-sync` skill) |
 | Work a finding | `list_open_findings`, `update_finding` (status/severity/owner; severity recomputes SLA) |
 
+## Hosted AI tools
+
+The server also proxies seven paid third-party APIs behind Pipeline's OAuth, using platform keys metered per org — no local SERP/keyword/image keys to configure. Reach for these as the zero-setup path; if the user already has their own local keys (`GOOGLE_AI_API_KEY`, a DataForSEO account, etc.), those are the first choice and these are the fallback.
+
+| Task | Tool |
+|---|---|
+| Google SERP (organic, people-also-ask, related searches) for competitor discovery, fact-finding | `serp_search` (query, country?, language?, num?) |
+| Real monthly volume/CPC/competition for up to 100 keywords, or ideas expanded from a seed | `keyword_research` (mode `volume` default or `ideas`, keywords?, seed?, location_code?, language_code?) |
+| Any URL → clean markdown (JS-rendered included) for competitor content analysis | `scrape_url` (url) |
+| PageSpeed: category scores + lab Core Web Vitals + field data | `pagespeed_check` (url, strategy?) |
+| Generate an image (Gemini "Nano Banana") stored as a Pipeline artifact | `generate_image` (prompt, aspect_ratio?, content_item_id?, filename?, kind?) → returns `artifact_id` |
+| Download an artifact's bytes as base64 | `get_artifact_content` (artifact_id) |
+| Per-tool usage totals for the active org | `get_ai_usage` (days?) |
+
+- **Not enabled?** Any tool whose provider key isn't configured on the server returns a clear "not enabled on this Pipeline server" error. Treat that as a signal to fall back to the user's local key/tooling, not to retry.
+- **Image → local file flow.** `generate_image` doesn't hand back bytes; it stores the image as an artifact (`kind` defaults to `hero`, optionally linked via `content_item_id`) and returns `artifact_id`. To land it on disk (e.g. the hero image a blog delivery contract expects), call `get_artifact_content(artifact_id)` and write the decoded base64 to the file.
+
 ## Habits
 
 - When you finish producing something (draft, audit, creative), `attach_artifact` it and `advance_stage` the item in the same breath — Pipeline is only useful if state lands there.
