@@ -23,6 +23,7 @@ If the audit needs data the user has no local API setup for, the hosted tools fi
 2. Findings are auto-created server-side with fingerprint dedupe: re-submitting an audit **refreshes** matching open findings, and open findings of the same kind+target that are *absent* from the new submission are auto-marked **fixed** — so always submit the complete envelope, never a filtered subset.
 3. Attach the human-readable report (PDF/markdown) to the audit with `attach_artifact`.
 4. Between audits, work findings via `list_open_findings` / `update_finding` (status, owner; severity changes recompute the SLA due date).
+5. Expect findings no skill run submitted: for subscribed/BYO-key orgs the server itself runs weekly rank/CWV/backlink snapshots and auto-files findings (fingerprints `rank_drop:domain:keyword`, `cwv:domain`). Work and resolve them via `update_finding` like any other. (Optional weekly email digest: Settings → Members.)
 
 ## claude-ads → Pipeline
 
@@ -37,7 +38,7 @@ claude-ads scores accounts against a catalog of stable check IDs.
 2. **Draft/revision produced** → `attach_artifact` the markdown against the item; `advance_stage` as it moves (drafting → review → etc.). Stage moves *forward out of* a human-gate stage are refused by the server — a human clears gates in the web UI; report the gate message and stop. Need a hero image and the user has no local `GOOGLE_AI_API_KEY`? `generate_image` (hosted) produces one straight into a Pipeline artifact; download it to disk via the signed `download_url` it returns (curl; `get_artifact_content` works too for small files) to satisfy the blog delivery contract. Same story for blog narration: `generate_audio` covers the blog-audio workflow without a local key.
 3. **Preflight/review results** → the skill's `preflight-report.json` and review scorecard (the `BLOCKING:` line) are machine-readable: `submit_audit` with `kind: "blog_quality"`, target = the item's slug.
 4. **Published** → `update_item` with the live URL and published date.
-5. **Repurposed content** (social post, newsletter cut from an article) → `create_item` for the derivative on its channel, then `link_derivative` (child derived_from parent). Check `list_repurpose_gaps` to find published items missing declared channels — that's the repurposing to-do list. Reels/shorts derivatives can be produced hosted-side: `generate_video` (defaults to vertical 9:16; async — poll `get_ai_job`) plus `generate_audio` for the voiceover, both landing as artifacts on the derivative item via `content_item_id`.
+5. **Repurposed content** (social post, newsletter cut from an article) → `create_item` for the derivative on its channel, then `link_derivative` (child derived_from parent). Check `list_repurpose_gaps` to find published items missing declared channels — that's the repurposing to-do list. Reels/shorts derivatives can be produced end-to-end hosted-side: `generate_video` (defaults to vertical 9:16; async — poll `get_ai_job`) → `generate_audio` voiceover → `generate_music` → `transcribe_audio` for SRT captions → `compose_reel` to assemble the finished MP4 — each part landing as an artifact on the derivative item via `content_item_id`; download the final reel via its signed `download_url`.
 
 ## When to sync
 

@@ -19,7 +19,7 @@ MCP has no tools to create accounts, orgs, or brands. If any of these don't exis
 
 The plugin already registered the `pipeline` MCP server (https://pipeline.zerobsai.com/api/mcp). If `mcp__pipeline__*` tools fail with an auth error or aren't listed, tell the user to run `/mcp` and authenticate the `pipeline` server — OAuth completes in the browser against the account from step 1. No API keys, no config editing.
 
-The same server also exposes hosted AI-workflow tools (SERP, keyword research, URL scraping, PageSpeed, image/video/audio generation) that run on platform keys — nothing for the user to configure. They're metered per org; `get_ai_usage` shows consumption. The `pipeline` skill covers when to use them.
+The same server also exposes hosted AI-workflow tools (SERP, keyword research, URL scraping, PageSpeed, image/video/audio/music generation, reel assembly, competitive intel, semantic search over your own content) that run on platform keys — nothing for the user to configure. They're metered per org; `get_ai_usage` shows consumption. Some servers require a subscription or credits (Settings → Billing), and orgs can add their own provider keys (Settings → API keys) to bypass metering. The `pipeline` skill covers when to use them.
 
 ## 3. Scope: org and brand
 
