@@ -36,7 +36,7 @@ Pipeline (https://pipeline.zerobsai.com) is the system of record for marketing c
 
 ## Hosted AI tools
 
-The server also proxies seven paid third-party APIs behind Pipeline's OAuth, using platform keys metered per org — no local SERP/keyword/image keys to configure. Reach for these as the zero-setup path; if the user already has their own local keys (`GOOGLE_AI_API_KEY`, a DataForSEO account, etc.), those are the first choice and these are the fallback.
+The server also proxies ten paid third-party APIs behind Pipeline's OAuth, using platform keys metered per org — no local SERP/keyword/image keys to configure. Reach for these as the zero-setup path; if the user already has their own local keys (`GOOGLE_AI_API_KEY`, a DataForSEO account, etc.), those are the first choice and these are the fallback.
 
 | Task | Tool |
 |---|---|
@@ -44,12 +44,17 @@ The server also proxies seven paid third-party APIs behind Pipeline's OAuth, usi
 | Real monthly volume/CPC/competition for up to 100 keywords, or ideas expanded from a seed | `keyword_research` (mode `volume` default or `ideas`, keywords?, seed?, location_code?, language_code?) |
 | Any URL → clean markdown (JS-rendered included) for competitor content analysis | `scrape_url` (url) |
 | PageSpeed: category scores + lab Core Web Vitals + field data | `pagespeed_check` (url, strategy?) |
-| Generate an image (Gemini "Nano Banana") stored as a Pipeline artifact | `generate_image` (prompt, aspect_ratio?, content_item_id?, filename?, kind?) → returns `artifact_id` |
+| Generate an image, stored as a Pipeline artifact | `generate_image` (prompt, provider?, aspect_ratio?, content_item_id?, filename?, kind?) → returns `artifact_id` + signed `download_url` |
+| Short video / reels, defaults vertical 9:16 — **async** | `generate_video` (prompt, provider?, aspect_ratio?, duration_seconds?, negative_prompt?, content_item_id?, filename?) → returns `job_id` |
+| Poll an async job | `get_ai_job` (job_id) |
+| TTS voiceover (Gemini) for reels or blog narration, stored as a WAV artifact | `generate_audio` (text, voice? — default `Kore`, content_item_id?, filename?) → signed `download_url` |
 | Download an artifact's bytes as base64 | `get_artifact_content` (artifact_id) |
 | Per-tool usage totals for the active org | `get_ai_usage` (days?) |
 
 - **Not enabled?** Any tool whose provider key isn't configured on the server returns a clear "not enabled on this Pipeline server" error. Treat that as a signal to fall back to the user's local key/tooling, not to retry.
-- **Image → local file flow.** `generate_image` doesn't hand back bytes; it stores the image as an artifact (`kind` defaults to `hero`, optionally linked via `content_item_id`) and returns `artifact_id`. To land it on disk (e.g. the hero image a blog delivery contract expects), call `get_artifact_content(artifact_id)` and write the decoded base64 to the file.
+- **Image providers.** `generate_image` takes `provider`: `gemini` (default, "Nano Banana"), `openai` (gpt-image-1), `stability` (SD3.5 Large), `flux` (FLUX 1.1 Pro via Replicate) — the claude-ads image-provider ladder without local keys. `kind` defaults to `hero`; link to an item via `content_item_id`.
+- **Video is async.** `generate_video` (providers: `veo` — Google Veo 3.1 Fast, default; `kling`; `hailuo` via Replicate) returns `{job_id, status: "pending"}` immediately; generation takes ~1–5 minutes. Poll `get_ai_job(job_id)` every ~30s. On success the finished MP4 is stored as a `video` artifact and the result includes a signed `download_url` — download it straight to a local file with curl. Do **not** use `get_artifact_content` for videos (too large for base64).
+- **Writing files locally.** `generate_image`, `generate_audio`, and `get_artifact_content` results include a signed `download_url` (valid 1 hour) — prefer `curl -o <file> "<url>"` over decoding base64 when landing a file on disk (e.g. the hero image a blog delivery contract expects). `get_artifact_content` still returns base64 for small files.
 
 ## Habits
 
